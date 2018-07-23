@@ -68,18 +68,13 @@ AddEncoding gzip svgz
 # Various rewrite rules.
 <IfModule mod_rewrite.c>
   RewriteEngine on
-  # from https://stackoverflow.com/a/4399158 
-  # from https://stackoverflow.com/a/34065445
-  # If we receive a forwarded http request from a proxy...
-  RewriteCond %{HTTP:X-Forwarded-Proto} =http [OR]
-
-  # ...or just a plain old http request directly from the client
-  RewriteCond %{HTTP:X-Forwarded-Proto} =""
+  # from https://stackoverflow.com/a/26494983 
+  ##Force SSL 
+  #Normal way (in case you need to deploy to NON-heroku)
   RewriteCond %{HTTPS} !=on
-
-  # Redirect to https version
-  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-  RewriteCond %{HTTPS} !=on
+  #Heroku way
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https 
+  #If neither above conditions are met, redirect to https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
   # Set "protossl" to "s" if we were accessed via https://.  This is used later
@@ -91,7 +86,7 @@ AddEncoding gzip svgz
 
   # Make sure Authorization HTTP header is available to PHP
   # even when running as CGI or FastCGI.
-  RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+  # RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
   # Block access to "hidden" directories whose names begin with a period. This
   # includes directories used by version control systems such as Subversion or

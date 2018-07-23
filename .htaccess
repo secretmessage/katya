@@ -69,6 +69,16 @@ AddEncoding gzip svgz
 <IfModule mod_rewrite.c>
   RewriteEngine on
   # from https://stackoverflow.com/a/4399158 
+  # from https://stackoverflow.com/a/34065445
+  # If we receive a forwarded http request from a proxy...
+  RewriteCond %{HTTP:X-Forwarded-Proto} =http [OR]
+
+  # ...or just a plain old http request directly from the client
+  RewriteCond %{HTTP:X-Forwarded-Proto} =""
+  RewriteCond %{HTTPS} !=on
+
+  # Redirect to https version
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 

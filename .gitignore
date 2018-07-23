@@ -2,3 +2,4 @@
 vendor/
 modules/contrib/
 sites/default/files/
+.vscode/
